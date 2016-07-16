@@ -439,7 +439,9 @@ cor(wine$quality, wine$volatile.acidity)
 ggplot(data = wine, aes(factor(quality), volatile.acidity)) + geom_boxplot()
 ggplot(wine, aes(volatile.acidity, ..density.., colour = quality.group)) +
   geom_freqpoly(binwidth = 0.1) +
-  scale_colour_brewer(palette = "PuRd")
+  scale_colour_brewer(palette = "PuRd") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
 ```
 
 We can see from this boxplot and the distribution that the good quality wine (i.e. score of 7,8) have low volatile acidity which peak at 0.3
@@ -528,7 +530,9 @@ ggplot(wine, aes(pH, citric.acid))+ geom_point(alpha = 0.25) +
   geom_smooth(method='lm', color = 'red') +  scale_x_log10()
 ggplot(wine, aes(citric.acid, colour = pH.group)) +
   geom_freqpoly(binwidth = 0.1) +
-  scale_colour_brewer(palette = "Greens") 
+  scale_colour_brewer(palette = "Greens") +
+  theme(panel.background = element_rect(fill = "grey20"),
+          panel.grid =element_line(linetype = "dotted"))
   
 ```
 
@@ -632,7 +636,6 @@ ggplot(data = wine, aes(x = volatile.acidity, y = total.sulfur.dioxide,
 
 ```{r echo = FALSE}
 # volatile.acidity & density
-cor(sqrt((wine$density)*(wine$volatile.acidity)), wine$quality)
 ggplot(data = wine, aes(x = volatile.acidity, y = density, 
                         colour = quality.group)) + 
   geom_point(shape = 15, alpha = 0.75) + 
@@ -656,24 +659,74 @@ ggplot(data = subset(wine, total.sulfur.dioxide <= 200), aes(x = total.sulfur.di
 
 #### Combined Group
 
+
 ```{r echo = FALSE}
 # volatile.acidity & sulphates
-ggplot(data = wine, aes(x = volatile.acidity, y = sulphates, 
-                        colour = quality.group)) + 
+ggplot(data = subset(wine, (sulphates<= 1.5)&(volatile.acidity <=1.4)), 
+       aes(x = volatile.acidity, y = sulphates, colour = quality.group)) + 
   geom_point(shape = 15, alpha = 0.75) + 
-  scale_colour_brewer(palette = "Greens") +
+  scale_colour_brewer(palette = "Blues") +
   theme(panel.background = element_rect(fill = "grey20"),
         panel.grid =element_line(linetype = "dotted"))
   
 ```
 
 ```{r echo = FALSE}
-# volatile.acidity & alcohol
-ggplot(data = wine, aes(x = volatile.acidity, y = alcohol , 
-                        colour = quality.group)) +
-  geom_point(alpha = 0.75, shape = 15) +
-  scale_colour_brewer(palette = "PuRd") +
+# fixed.acidity & density
+p1 <- ggplot(data = wine, aes(x = density, y = fixed.acidity, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Reds") +
   theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+
+p2 <- ggplot(data = wine, aes(x = density, y = volatile.acidity, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Purples") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+
+p3 <- ggplot(data = wine, aes(x = density, y = citric.acid, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Blues") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+
+grid.arrange(p1, p2, p3, nrow = 3)
+  
+```
+
+```{r echo = FALSE}
+# volatile.acidity & density
+ggplot(data = wine, aes(x = volatile.acidity, y = density, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Purples") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+  
+```
+
+```{r echo = FALSE}
+# citric.acid & density
+ggplot(data = wine, aes(x = citric.acid, y = density, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Blues") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+  
+```
+
+```{r echo = FALSE}
+# volatile.acidity & fixed.acidity
+ggplot(data = wine, aes(x = volatile.acidity, y = fixed.acidity, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Greens") +
+  theme(panel.background = element_rect(fill = "grey15"),
         panel.grid =element_line(linetype = "dotted"))
 ```
 
@@ -685,8 +738,32 @@ ggplot(data = wine, aes(x = volatile.acidity, y = citric.acid ,
   scale_colour_brewer(palette = "Oranges") +
   theme(panel.background = element_rect(fill = "grey20"),
         panel.grid =element_line(linetype = "dotted"))
+```
+
+```{r echo = FALSE}
+# volatile.acidity & fixed.acidity
+ggplot(data = subset(wine, citric.acid >0), aes(x = volatile.acidity, y = sqrt(fixed.acidity*citric.acid), colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Greens") +
+  theme(panel.background = element_rect(fill = "grey15"),
+        panel.grid =element_line(linetype = "dotted"))
   
 ```
+
+
+
+
+```{r echo = FALSE}
+# volatile.acidity & alcohol
+ggplot(data = subset(wine, volatile.acidity <=1.4), 
+       aes(x = volatile.acidity, y = alcohol, colour = quality.group)) +
+  geom_point(alpha = 0.75, shape = 15) +
+  scale_colour_brewer(palette = "PuRd") +
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))
+```
+
+
 
 
 ### pH
@@ -799,35 +876,31 @@ The result related to volatile.acidity is in accord with the wine study that I h
 ### Plot One
 ```{r echo=FALSE}
 # quality vs. volatile.acidity plot
-ggplot(data = wine, aes(factor(quality), volatile.acidity)) + geom_boxplot() +
+
+p1 <- ggplot(data = wine, aes(factor(quality), volatile.acidity)) + geom_boxplot() +
   ggtitle('Boxplot of quality vs. volatile.acidity') +
   scale_y_continuous(name="Volatile.acidity (g/dm^3)") +
   scale_x_discrete(name="Quality Score") 
-```
 
-### Description One
-The above boxplot shows the quality level in the x-axis and volatile.acidity in the y-axis. And we can see clearly from the plot that wine variations with higher scores have lower min, median, max volatile.acidity. This plot supports the information I mentioned earlier about winemaking that good wine has low volatile acid level.  
-
-
-### Plot Two
-```{r echo=FALSE, Plot_One}
-ggplot(wine, aes(volatile.acidity, ..density.., colour = quality.group)) +
+p2 <- ggplot(wine, aes(volatile.acidity, ..density.., colour = quality.group)) +
   geom_freqpoly(binwidth = 0.1) +
   scale_x_continuous(breaks = seq(0.0,1.8, 0.1), 
                      name = "Volatile.acidity (g/dm^3)" )+
-  scale_colour_brewer(palette = "PuRd", name = "Quality") +
+  scale_colour_brewer(palette = "Oranges", name = "Quality") +
   theme(panel.background = element_rect(fill = "grey15"),
         panel.grid.major =element_line(linetype = "dotted"),
         panel.grid.minor = element_blank()) +
   ggtitle("Frequency Polygons of Volatile.acidity vs. Quality Groups") 
-  
+grid.arrange(p1, p2, ncol = 2)
+
 ```
 
-### Description Two
-The above frequency poly shows volatile.acidity in the x-axis and its density in the y-axis. And the three lines with different colors represents three different quality groups by grouping quality score 3,4 as the low quality wine, 5 and 6 as the medium quality, and 7 to 8 as the good quality. And from reading this graph, we can see three lines have different peaks. The line representing good quality wine peak at a lower volatile.acidity level than wine with bad quality score. 
+### Description One
+The above boxplot and frequency polygons shows the relationship quality level and volatile.acidity. The left boxplot showed the quality score in the x-axis and volatile.acidity in the y-axis. And we can see clearly from the plot that wine variations with higher scores have lower min, median, max volatile.acidity. The right frequency polygons shows volatile.acidity in the x-axis and its density in the y-axis. And the three lines with different colors represents three different quality groups by grouping quality score 3,4 as the low quality wine, 5 and 6 as the medium quality, and 7 to 8 as the good quality. And from reading this graph, we can see three lines have different peaks. The line representing good quality wine peak at a lower volatile.acidity level than wine with bad quality score.  This plot supports the information I mentioned earlier about winemaking that good wine has low volatile acid level.  
 
 
-### Plot Three
+### Plot Two
+
 
 ```{r echo = FALSE}
 # alcohol & sulphates
@@ -844,8 +917,49 @@ ggplot(data = subset(wine, sulphates<= 1.5), aes(x = alcohol, y = sulphates,
 
 ```
 
-### Description Three
+### Description Two
 In the scatter plot above, sulphates feature is shown in the y-axis and alcohol is shown in the x-axis. And I used sequential color scheme to represent different quality groups.It is easy to observe that the feature sulphates and alcohol strengthened each other, and the quality score decrease while they increase. 
+
+
+### Plot Three
+
+```{r echo = FALSE}
+# fixed.acidity & density
+p1 <- ggplot(data = wine, aes(x = density, y = fixed.acidity, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Reds") +
+  scale_y_continuous(name = "Fixed.acidity(g/dm^3)") +
+  scale_x_continuous(name = "Density(g/cm^3)")+
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted")) + 
+  ggtitle("Scatter Plot of Fixed.acidity vs. Density by quality groups")
+
+p2 <- ggplot(data = wine, aes(x = density, y = citric.acid, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Blues") +
+  scale_y_continuous(name = "Citric.acid(g/dm^3)") +
+  scale_x_continuous(name = "Density(g/cm^3)")+
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))+ 
+  ggtitle("Scatter Plot of Citric.acid vs. Density by quality groups")
+
+p3 <- ggplot(data = wine, aes(x = density, y = volatile.acidity, 
+                        colour = quality.group)) + 
+  geom_point(shape = 15, alpha = 0.75) + 
+  scale_colour_brewer(palette = "Purples") +
+    scale_y_continuous(name = "Volatile.acidity(g/dm^3)") +
+  scale_x_continuous(name = "Density(g/cm^3)")+
+  theme(panel.background = element_rect(fill = "grey20"),
+        panel.grid =element_line(linetype = "dotted"))+ 
+  ggtitle("Scatter Plot of Volatile.acidity vs. Density by quality groups")
+
+grid.arrange(p1, p2, p3, nrow = 3)
+```
+
+### Description Three
+The above scatter plots showed the relationships of wine quality with density and one of three different acids, fixed.acidity, volatile.acidity, and citric.acid. And it revealed something interesting. We can see from the plots that even though that it is not obvious that higher density leads to lower quality scores, the majority of wine variations with density lower than 0.995g/cm^3 have good quality disregarding their fixed.acidity, citric.acid, volatile.acidity level. For those variations with higher density, we can see clear trend and difference between the three acidity property. In the first two plots, when there is same density, variations with higher fixed.acidity and citric.acid have higher quality scores while in the last plot, higher volatile.acidity results in lower quality scores.     
 
 
 ------
